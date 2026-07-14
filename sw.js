@@ -16,32 +16,7 @@ function showTimerNotification() {
   });
 }
 
-// ── Local SW fallback (court délai, Android background) ──────────────────────
-self.addEventListener('message', (event) => {
-  const { type, endTime } = event.data || {};
-
-  if (type === 'SCHEDULE_TIMER') {
-    scheduledVersion++;
-    const myVersion = scheduledVersion;
-
-    event.waitUntil(
-      new Promise((resolve) => {
-        const ms = Math.max(0, endTime - Date.now());
-        setTimeout(async () => {
-          if (scheduledVersion !== myVersion) { resolve(); return; }
-          const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
-          const appVisible = clients.some(c => c.visibilityState === 'visible');
-          if (!appVisible) await showTimerNotification();
-          resolve();
-        }, ms);
-      })
-    );
-  }
-
-  if (type === 'CANCEL_TIMER') {
-    scheduledVersion++;
-  }
-});
+self.addEventListener('message', () => {});
 
 // ── Web Push (serveur Cloudflare) ─────────────────────────────────────────────
 self.addEventListener('push', (event) => {
